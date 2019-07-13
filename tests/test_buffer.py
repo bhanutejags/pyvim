@@ -22,36 +22,43 @@ class EditorBuffer(object):
 
     def __post_init__(self):
         self.text_length = len(self.text)
+
+    def __subclasshook__(cls, subclass):
+        return super().__subclasshook__(subclass)
     
-    def move_cursor(new_cursor_position: int):
-        if new_cursor_position > text_length:
-            self.cursor = cursor
+    def move_cursor(self, new_cursor_position: int):
+        if new_cursor_position > self.text_length:
+            pass
         else:
             self.cursor = new_cursor_position
 
-    def add_text_at_end(new_text: str):
-        self.text = text + new_text
-        self.length = len(text)
+    def add_text_at_end(self, new_text: str):
+        self.text = self.text + new_text
+        self.text_length = len(self.text)
     
-    def delete_text_end(number_of_chars_removed: int):
-        self.text = text[:-number_of_chars_removed]
-        self.text_length = len(text)
+    def delete_text_end(self, number_of_chars_removed: int):
+        self.text = self.text[:-number_of_chars_removed]
+        self.text_length = len(self.text)
 
-    def add_text(new_text: str, cursor: int):
-        self.text = f"{text[cursor:]}{new_text}{text[:cursor]}"
+    def add_text(self, new_text: str, cursor: int):
+        self.text = f"{self.text[cursor:]}{new_text}{self.text[:cursor]}"
         self.cursor = cursor + len(new_text)
-        self.text_length = len(text)
+        self.text_length = len(self.text)
     
-    def delete_text(start_point:int, end_point: int, cursor:int):
-        self.text = f"{text[:start_point]}{text[end_point:]}"
-        self.text_length = len(text)
+    def delete_text(self, start_point:int, end_point: int, cursor:int):
+        self.text = f"{self.text[:start_point]}{self.text[end_point:]}"
+        self.text_length = len(self.text)
     
 
 def test_editor_speed():
-    # input_string = random_unicode(1000)
-    input_ascii_string = random_ascii(12)
-    editor_buffer = EditorBuffer(text=input_ascii_string)
-    editor_buffer.add_text(new_text="Hello my name is ninja", cursor=10)
+    input_string = random_unicode(10)
+    # input_ascii_string = random_ascii(10000)
+    editor_buffer = EditorBuffer(text=input_string)
+    editor_buffer.add_text(new_text="Hello my name is abc", cursor=123)
+    editor_buffer.add_text(new_text="Dragon ball z", cursor=10)
+    editor_buffer.delete_text_end(10)
+    editor_buffer.delete_text(100,23,10)
+    editor_buffer.move_cursor(10)
 
 if __name__ == "__main__":
     test_editor_speed()
