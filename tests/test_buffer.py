@@ -28,7 +28,7 @@ class EditorBuffer(object):
     
     def move_cursor(self, new_cursor_position: int):
         if new_cursor_position > self.text_length:
-            pass
+            self.cursor = text_length - 1
         else:
             self.cursor = new_cursor_position
 
@@ -48,16 +48,18 @@ class EditorBuffer(object):
     def delete_text(self, start_point:int, end_point: int, cursor:int):
         self.text = f"{self.text[:start_point]}{self.text[end_point:]}"
         self.text_length = len(self.text)
+        self.cursor = start_point
     
 
 def test_editor_speed():
-    input_string = random_unicode(10)
+    # input_string = random_unicode(1000)
     # input_ascii_string = random_ascii(10000)
+    input_string="abcd"
     editor_buffer = EditorBuffer(text=input_string)
-    editor_buffer.add_text(new_text="Hello my name is abc", cursor=123)
-    editor_buffer.add_text(new_text="Dragon ball z", cursor=10)
-    editor_buffer.delete_text_end(10)
-    editor_buffer.delete_text(100,23,10)
+    editor_buffer.add_text(new_text="Hello my name is abc", cursor=1)
+    editor_buffer.add_text(new_text="Dragon ball z", cursor=2)
+    editor_buffer.delete_text_end(4)
+    editor_buffer.delete_text(4,6,10)
     editor_buffer.move_cursor(10)
 
 if __name__ == "__main__":
