@@ -58,3 +58,4 @@ target/
 # Text editors and IDEs
 .vscode/
 .idea/
+.devcontainer/
