@@ -23,9 +23,6 @@ class EditorBuffer(object):
     def __post_init__(self):
         self.text_length = len(self.text)
 
-    def __subclasshook__(cls, subclass):
-        return super().__subclasshook__(subclass)
-    
     def move_cursor(self, new_cursor_position: int):
         if new_cursor_position > self.text_length:
             self.cursor = text_length - 1
