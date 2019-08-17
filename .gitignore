@@ -59,3 +59,4 @@ target/
 .vscode/
 .idea/
 .devcontainer/
+.DS_Store
