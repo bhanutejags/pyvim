@@ -59,5 +59,6 @@ def test_editor_speed():
     editor_buffer.delete_text(4,6,10)
     editor_buffer.move_cursor(10)
 
+
 if __name__ == "__main__":
     test_editor_speed()
