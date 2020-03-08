@@ -1,6 +1,9 @@
 from __future__ import unicode_literals, print_function
 from prompt_toolkit.application import run_in_terminal
+from prompt_toolkit.document import Document
+
 import os
+import re
 import six
 
 __all__ = (
@@ -704,3 +707,50 @@ def set_scroll_offset(editor, value):
             'Invalid value. Expecting comma separated list of integers')
     else:
         editor.colorcolumn = numbers
+
+
+def substitute(editor, range_start, range_end, search, replace, flags):
+    """ Substitute /search/ with /replace/ over a range of text """
+    def get_line_index_iterator(cursor_position_row, range_start, range_end):
+        if not range_start:
+            assert not range_end
+            range_start = range_end = cursor_position_row
+        else:
+            range_start = int(range_start) - 1
+            range_end = int(range_end) - 1 if range_end else range_start
+        return range(range_start, range_end + 1)
+
+    def get_transform_callback(search, replace, flags):
+        SUBSTITUTE_ALL, SUBSTITUTE_ONE = 0, 1
+        sub_count = SUBSTITUTE_ALL if 'g' in flags else SUBSTITUTE_ONE
+        return lambda s: re.sub(search, replace, s, count=sub_count)
+
+    search_state = editor.application.current_search_state
+    buffer = editor.current_editor_buffer.buffer
+    cursor_position_row = buffer.document.cursor_position_row
+
+    # read editor state
+    if not search:
+        search = search_state.text
+
+    if replace is None:
+        replace = editor.last_substitute_text
+
+    line_index_iterator = get_line_index_iterator(cursor_position_row, range_start, range_end)
+    transform_callback = get_transform_callback(search, replace, flags)
+    new_text = buffer.transform_lines(line_index_iterator, transform_callback)
+
+    assert len(line_index_iterator) >= 1
+    new_cursor_position_row = line_index_iterator[-1]
+
+    # update text buffer
+    buffer.document = Document(
+        new_text,
+        Document(new_text).translate_row_col_to_index(new_cursor_position_row, 0),
+    )
+    buffer.cursor_position += buffer.document.get_start_of_line_position(after_whitespace=True)
+    buffer._search(search_state, include_current_position=True)
+
+    # update editor state
+    editor.last_substitute_text = replace
+    search_state.text = search
